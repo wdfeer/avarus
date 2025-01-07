@@ -54,11 +54,11 @@ private abstract class UUIDEffect(val item: Item, val itemsRequired: Int) {
       return 1
     }
 
-    val count = player.getInventory.count(Items.COBBLESTONE)
+    val count = player.getInventory.count(item)
     if count >= itemsRequired then {
       for
         i <- 0 until (player.getInventory.size - 1)
-        if player.getInventory.getStack(i).getItem == Items.COBBLESTONE
+        if player.getInventory.getStack(i).getItem == item
       do player.getInventory.removeStack(i)
 
       apply(player)
