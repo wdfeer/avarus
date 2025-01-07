@@ -2,7 +2,7 @@ package wdfeer.avarus
 
 import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents
-import net.minecraft.entity.attribute.{EntityAttributeModifier, EntityAttributes}
+import net.minecraft.entity.attribute.{EntityAttribute, EntityAttributeModifier}
 import net.minecraft.item.{Item, Items}
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.network.ServerPlayerEntity
@@ -10,14 +10,38 @@ import net.minecraft.text.Text
 
 import java.util.UUID
 
-abstract class AttributeEffect(item: Item) {
+class AttributeEffect(item: Item,
+                      val attribute: EntityAttribute,
+                      val value: Double,
+                      val operation: EntityAttributeModifier.Operation,
+                      itemsRequired: Int = 1024) extends UUIDEffect(item, itemsRequired) {
+  override def isApplied(player: ServerPlayerEntity): Boolean = {
+    val attributeInstance = player.getAttributeInstance(attribute)
+    if attributeInstance != null then
+      attributeInstance.getModifier(uuid) != null
+    else false
+  }
+
+  override def apply(player: ServerPlayerEntity): Unit = {
+    val modifier = new EntityAttributeModifier(
+      uuid,
+      name,
+      value,
+      operation
+    )
+
+    val attributeInstance = player.getAttributeInstance(attribute)
+    if attributeInstance != null then attributeInstance.addPersistentModifier(modifier)
+  }
+}
+
+private abstract class UUIDEffect(val item: Item, val itemsRequired: Int) {
   ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, _) => {
     if isApplied(oldPlayer) then apply(newPlayer)
   })
 
   val name: String = Avarus.MOD_ID + item.getName
   val uuid: UUID = UUID.nameUUIDFromBytes(name.getBytes)
-  private val itemsRequired = 512
 
   def isApplied(player: ServerPlayerEntity): Boolean
 
@@ -26,7 +50,7 @@ abstract class AttributeEffect(item: Item) {
   def command(context: CommandContext[ServerCommandSource]): Int = {
     val player = context.getSource.getPlayerOrThrow
     if isApplied(player) then {
-      context.getSource.sendMessage(Text.of(s"${item.getName} effect already applied!"))
+      context.getSource.sendMessage(Text.of(s"${item.toString} effect already applied!"))
       return 1
     }
 
@@ -44,26 +68,5 @@ abstract class AttributeEffect(item: Item) {
       context.getSource.sendMessage(Text.of(s"Not enough items! ($count out of $itemsRequired)"))
       1
     }
-  }
-}
-
-object CobblestoneEffect extends AttributeEffect(Items.COBBLESTONE) {
-  override def isApplied(player: ServerPlayerEntity): Boolean = {
-    val attributeInstance = player.getAttributeInstance(EntityAttributes.GENERIC_ARMOR)
-    if attributeInstance != null then
-      attributeInstance.getModifier(uuid) != null
-    else false
-  }
-
-  override def apply(player: ServerPlayerEntity): Unit = {
-    val modifier = new EntityAttributeModifier(
-      uuid,
-      name,
-      2.0,
-      EntityAttributeModifier.Operation.ADDITION
-    )
-
-    val attributeInstance = player.getAttributeInstance(EntityAttributes.GENERIC_ARMOR)
-    if attributeInstance != null then attributeInstance.addPersistentModifier(modifier)
   }
 }
