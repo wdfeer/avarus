@@ -1,0 +1,31 @@
+{
+	"schemaVersion": 1,
+	"id": "avarus",
+	"version": "${version}",
+	"name": "Avarus",
+	"description": "Sacrifice thousands of items for permanent stat increases.",
+	"authors": [
+		"wdfeer"
+	],
+	"contact": {
+		"sources": "https://github.com/wdfeer/avarus"
+	},
+	"license": "GPL-3.0",
+	"icon": "assets/avarus/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			{
+				"adapter": "scala",
+				"value": "wdfeer.avarus.Avarus"
+			}
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.16.9",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*",
+		"krysztal-language-scala": "*"
+	}
+}
