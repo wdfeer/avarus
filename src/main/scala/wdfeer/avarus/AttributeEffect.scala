@@ -11,10 +11,10 @@ import net.minecraft.text.Text
 import java.util.UUID
 
 class AttributeEffect(item: Item,
-                      val attribute: EntityAttribute,
+                      itemsRequired: Int,
                       val value: Double,
                       val operation: EntityAttributeModifier.Operation,
-                      itemsRequired: Int = 1024) extends UUIDEffect(item, itemsRequired) {
+                      val attribute: EntityAttribute) extends UUIDEffect(item, itemsRequired) {
   override def isApplied(player: ServerPlayerEntity): Boolean = {
     val attributeInstance = player.getAttributeInstance(attribute)
     if attributeInstance != null then

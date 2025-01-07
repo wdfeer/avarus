@@ -30,6 +30,27 @@ object Avarus extends ModInitializer {
   }
 
   private val effects: List[AttributeEffect] = List(
-    AttributeEffect(Items.COBBLESTONE, EntityAttributes.GENERIC_ARMOR, 2.0, Operation.ADDITION)
+    AttributeEffect(Items.COBBLESTONE, 2048, 1.0, Operation.ADDITION, EntityAttributes.GENERIC_ARMOR),
+    AttributeEffect(Items.COBBLED_DEEPSLATE, 2048, 1.0, Operation.ADDITION, EntityAttributes.GENERIC_ARMOR),
+    AttributeEffect(Items.STONE, 2024, 2.0, Operation.ADDITION, EntityAttributes.GENERIC_ARMOR),
+    AttributeEffect(Items.DEEPSLATE, 2024, 2.0, Operation.ADDITION, EntityAttributes.GENERIC_ARMOR),
+    AttributeEffect(Items.BRICKS, 512, 2.0, Operation.ADDITION, EntityAttributes.GENERIC_ARMOR),
+    AttributeEffect(Items.SHULKER_SHELL, 128, 2.0, Operation.ADDITION, EntityAttributes.GENERIC_ARMOR),
+
+    AttributeEffect(Items.WHEAT, 512, 1.0, Operation.ADDITION, EntityAttributes.GENERIC_MAX_HEALTH),
+    AttributeEffect(Items.POTATO, 512, 1.0, Operation.ADDITION, EntityAttributes.GENERIC_MAX_HEALTH),
+    AttributeEffect(Items.CARROT, 512, 1.0, Operation.ADDITION, EntityAttributes.GENERIC_MAX_HEALTH),
+    AttributeEffect(Items.BEETROOT, 512, 1.0, Operation.ADDITION, EntityAttributes.GENERIC_MAX_HEALTH),
+    AttributeEffect(Items.PUMPKIN, 512, 1.0, Operation.ADDITION, EntityAttributes.GENERIC_MAX_HEALTH),
+    AttributeEffect(Items.MELON_SLICE, 512, 1.0, Operation.ADDITION, EntityAttributes.GENERIC_MAX_HEALTH),
+    AttributeEffect(Items.SUGAR_CANE, 512, 1.0, Operation.ADDITION, EntityAttributes.GENERIC_MAX_HEALTH),
+    AttributeEffect(Items.CACTUS, 512, 1.0, Operation.ADDITION, EntityAttributes.GENERIC_MAX_HEALTH),
+    AttributeEffect(Items.MUSHROOM_STEW, 32, 1.0, Operation.ADDITION, EntityAttributes.GENERIC_MAX_HEALTH),
+
+    AttributeEffect(Items.COOKIE, 1024, 2.0, Operation.ADDITION, EntityAttributes.GENERIC_MAX_HEALTH),
+    AttributeEffect(Items.BREAD, 512, 2.0, Operation.ADDITION, EntityAttributes.GENERIC_MAX_HEALTH),
+    AttributeEffect(Items.CAKE, 32, 2.0, Operation.ADDITION, EntityAttributes.GENERIC_MAX_HEALTH),
+
+    AttributeEffect(Items.NETHER_STAR, 4, 1.5, Operation.MULTIPLY_TOTAL, EntityAttributes.GENERIC_MAX_HEALTH),
   )
 }
