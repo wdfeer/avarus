@@ -19,6 +19,6 @@ object AvarusClient extends ClientModInitializer:
 
     ClientTickEvents.END_CLIENT_TICK.register(client => {
       while keyBinding.wasPressed do
-        MinecraftClient.getInstance().setScreen(new AvarusGUI())
+        MinecraftClient.getInstance().setScreen(AvarusScreen())
     })
   }

@@ -1,16 +1,16 @@
 package wdfeer.avarus
 
-import net.minecraft.client.gui.screen.Screen
-import net.minecraft.client.gui.tooltip.Tooltip
-import net.minecraft.client.gui.widget.ButtonWidget
-import net.minecraft.text.Text
+import io.wispforest.owo.ui.base.BaseOwoScreen
+import io.wispforest.owo.ui.container.{Containers, FlowLayout}
+import io.wispforest.owo.ui.core.{OwoUIAdapter, Surface}
 
-// TODO: replace with owo-ui
-class AvarusGUI extends Screen(Text.translatable("wdfeer.avarus.gui.title")):
-  override def init(): Unit = {
-    val button = ButtonWidget.builder(Text.literal("Button 1"), button => {
-      System.out.println("You clicked button1!")
-    }).dimensions(width / 2 - 205, 20, 200, 20).tooltip(Tooltip.of(Text.literal("Tooltip of button1"))).build
+class AvarusScreen extends TabbedScreen
 
-    addDrawableChild(button)
+class TabbedScreen extends BaseOwoScreen[FlowLayout]:
+  // TODO: create tabs: 'armor' and 'health' for the respective attribute effects
+
+  override def createAdapter(): OwoUIAdapter[FlowLayout] = OwoUIAdapter.create(this, Containers.verticalFlow)
+
+  override def build(root: FlowLayout): Unit = {
+    root.surface(Surface.VANILLA_TRANSLUCENT)
   }
