@@ -19,6 +19,12 @@
 				"adapter": "scala",
 				"value": "wdfeer.avarus.Avarus"
 			}
+		],
+		"client": [
+			{
+				"adapter": "scala",
+				"value": "wdfeer.avarus.AvarusClient"
+			}
 		]
 	},
 	"depends": {
