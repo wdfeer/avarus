@@ -1,5 +1,6 @@
 {
-  "wdfeer.avarus.avarus_keybinds": "Avarus",
-  "wdfeer.avarus.avarus_open_gui_keybind": "Open Avarus GUI"
+  "wdfeer.avarus.controls.category": "Avarus",
+  "wdfeer.avarus.controls.open_gui": "Open Avarus GUI",
+  "wdfeer.avarus.gui.title": "Avarus"
 }
 
