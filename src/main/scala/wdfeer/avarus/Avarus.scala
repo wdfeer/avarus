@@ -23,9 +23,16 @@ object Avarus extends ModInitializer {
       registerMessageCommand("avarus-help", _ => Text.of(
         "Avarus is a mod allowing to obtain stat increases (e.g. max hp) by \"buying\" them with a large amount of items with the \"avarus-get\" command, e.g.:\n/avarus cobblestone"
       ))
-      registerMessageCommand("avarus-status", context => Text.of(
-        s"Applied effects: ${effects.count(_.isApplied(context.getSource.getPlayer))}/${effects.size}"
-      ))
+      registerMessageCommand("avarus-status", context => {
+        val player = context.getSource.getPlayer
+        val (applied, notApplied) = effects.partition(_.isApplied(player))
+        Text.of(
+          s"${applied.size}/${effects.size} effects applied.\n\n" +
+            s"Available effects: " +
+            notApplied.take(3).map(_.item.toString).mkString(", ") +
+            (if notApplied.size <= 3 then "" else s", +${notApplied.size - 3}")
+        )
+      })
       registerGetEffectCommand()
     })
     logger.info("Avarus initialized. Start grinding.")
