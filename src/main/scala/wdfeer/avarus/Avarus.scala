@@ -17,23 +17,22 @@ object Avarus extends ModInitializer {
   private lazy val logger = LoggerFactory.getLogger("avarus")
 
   override def onInitialize(): Unit = {
-    CommandRegistrationCallback.EVENT.register((dispatcher, _, _) => {
-      registerStatusCommand(dispatcher)
-      registerEffectCommand(dispatcher)
+    CommandRegistrationCallback.EVENT.register((commandDispatcher, _, _) => {
+      implicit val dispatcher: CommandDispatcher[ServerCommandSource] = commandDispatcher
+
+      registerMessageCommand("avarus-help", _ => Text.of(
+        "Avarus is a mod allowing to obtain stat increases (e.g. max hp) by \"buying\" them with a large amount of items with the \"avarus-get\" command, e.g.:\n/avarus cobblestone"
+      ))
+      registerMessageCommand("avarus-status", context => Text.of(
+        s"Applied effects: ${effects.count(_.isApplied(context.getSource.getPlayer))}/${effects.size}"
+      ))
+      registerGetEffectCommand()
     })
     logger.info("Avarus initialized. Start grinding.")
   }
 
-  private def registerStatusCommand(dispatcher: CommandDispatcher[ServerCommandSource]): Unit = {
-    dispatcher.register(literal("avarus-status").executes(context => {
-      val str = s"Applied effects: ${effects.count(_.isApplied(context.getSource.getPlayer))}/${effects.size}"
-      context.getSource.sendMessage(Text.of(str))
-      0
-    }))
-  }
-
-  private def registerEffectCommand(dispatcher: CommandDispatcher[ServerCommandSource]): Unit = {
-    var builder: LiteralArgumentBuilder[ServerCommandSource] = literal("avarus")
+  private def registerGetEffectCommand()(implicit dispatcher: CommandDispatcher[ServerCommandSource]): Unit = {
+    var builder: LiteralArgumentBuilder[ServerCommandSource] = literal("avarus-get")
 
     for e <- effects do
       builder = builder.`then`(literal(e.item.toString.toLowerCase).executes(context => e.command(context)))
