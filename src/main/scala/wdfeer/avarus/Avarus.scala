@@ -9,6 +9,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier.Operation
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.item.Items
 import net.minecraft.server.command.ServerCommandSource
+import net.minecraft.text.Text
 import org.slf4j.LoggerFactory
 
 object Avarus extends ModInitializer {
@@ -17,12 +18,18 @@ object Avarus extends ModInitializer {
 
   override def onInitialize(): Unit = {
     CommandRegistrationCallback.EVENT.register((dispatcher, _, _) => {
-      dispatcher.register(literal("avarus-help").executes(context => {
-        context.getSource.sendMessage(???) // TODO: implement help message
-      }))
+      registerStatusCommand(dispatcher)
       registerEffectCommand(dispatcher)
     })
     logger.info("Avarus initialized. Start grinding.")
+  }
+
+  private def registerStatusCommand(dispatcher: CommandDispatcher[ServerCommandSource]): Unit = {
+    dispatcher.register(literal("avarus-status").executes(context => {
+      val str = s"Applied effects: ${effects.count(_.isApplied(context.getSource.getPlayer))}/${effects.size}"
+      context.getSource.sendMessage(Text.of(str))
+      0
+    }))
   }
 
   private def registerEffectCommand(dispatcher: CommandDispatcher[ServerCommandSource]): Unit = {
