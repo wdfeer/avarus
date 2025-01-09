@@ -16,11 +16,16 @@ object Avarus extends ModInitializer {
   private lazy val logger = LoggerFactory.getLogger("avarus")
 
   override def onInitialize(): Unit = {
-    CommandRegistrationCallback.EVENT.register((dispatcher, _, _) => registerCommand(dispatcher))
+    CommandRegistrationCallback.EVENT.register((dispatcher, _, _) => {
+      dispatcher.register(literal("avarus-help").executes(context => {
+        context.getSource.sendMessage(???) // TODO: implement help message
+      }))
+      registerEffectCommand(dispatcher)
+    })
     logger.info("Avarus initialized. Start grinding.")
   }
 
-  private def registerCommand(dispatcher: CommandDispatcher[ServerCommandSource]): Unit = {
+  private def registerEffectCommand(dispatcher: CommandDispatcher[ServerCommandSource]): Unit = {
     var builder: LiteralArgumentBuilder[ServerCommandSource] = literal("avarus")
 
     for e <- effects do
