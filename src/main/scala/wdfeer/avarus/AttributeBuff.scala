@@ -26,7 +26,7 @@ class AttributeBuff(item: Item,
   override def apply(player: ServerPlayerEntity): Unit = {
     val modifier = new EntityAttributeModifier(
       uuid,
-      name,
+      name, 
       value,
       operation
     )
