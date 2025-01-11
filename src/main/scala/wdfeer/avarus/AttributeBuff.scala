@@ -3,6 +3,7 @@ package wdfeer.avarus
 import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents
 import net.minecraft.entity.attribute.{EntityAttribute, EntityAttributeModifier}
+import net.minecraft.inventory.Inventory
 import net.minecraft.item.Item
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.network.ServerPlayerEntity
@@ -54,19 +55,27 @@ private abstract class UUIDEffect(val item: Item, val itemsRequired: Int) {
       return 1
     }
 
-    val count = player.getInventory.count(item)
-    if count >= itemsRequired then {
-      for
-        i <- 0 until (player.getInventory.size - 1)
-        if player.getInventory.getStack(i).getItem == item
-      do player.getInventory.removeStack(i)
-
+    val playerItemCount = player.getInventory.count(item)
+    if playerItemCount >= itemsRequired then {
+      consumeItems(player.getInventory)
       apply(player)
       0
     }
     else {
-      context.getSource.sendMessage(Text.of(s"Not enough items! ($count out of $itemsRequired)"))
+      context.getSource.sendMessage(Text.of(s"Not enough items! ($playerItemCount out of $itemsRequired)"))
       1
+    }
+  }
+
+  private def consumeItems(inventory: Inventory): Unit = {
+    var itemsUsed = 0
+    for (i <- 0 until inventory.size() if itemsUsed < itemsRequired) {
+      val stack = inventory.getStack(i)
+      if (stack.getItem == item) {
+        val itemCountToConsume = math.min(stack.getCount, itemsRequired - itemsUsed)
+        itemsUsed += itemCountToConsume
+        stack.decrement(itemCountToConsume)
+      }
     }
   }
 }
