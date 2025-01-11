@@ -3,18 +3,18 @@ package wdfeer.avarus
 import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents
 import net.minecraft.entity.attribute.{EntityAttribute, EntityAttributeModifier}
-import net.minecraft.item.{Item, Items}
+import net.minecraft.item.Item
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
 
 import java.util.UUID
 
-class AttributeEffect(item: Item,
-                      itemsRequired: Int,
-                      val value: Double,
-                      val operation: EntityAttributeModifier.Operation,
-                      val attribute: EntityAttribute) extends UUIDEffect(item, itemsRequired) {
+class AttributeBuff(item: Item,
+                    itemsRequired: Int,
+                    val value: Double,
+                    val operation: EntityAttributeModifier.Operation,
+                    val attribute: EntityAttribute) extends UUIDEffect(item, itemsRequired) {
   override def isApplied(player: ServerPlayerEntity): Boolean = {
     val attributeInstance = player.getAttributeInstance(attribute)
     if attributeInstance != null then
