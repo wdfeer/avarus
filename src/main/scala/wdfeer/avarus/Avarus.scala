@@ -24,10 +24,10 @@ object Avarus extends ModInitializer {
         val player = context.getSource.getPlayer
         val (applied, notApplied) = buffs.partition(_.isApplied(player))
         Text.of(
-          s"${applied.size}/${buffs.size} buffs applied.\n\n" +
+          s"${applied.length}/${buffs.length} buffs applied.\n\n" +
             s"Available buffs: " +
             notApplied.take(3).map(_.item.toString).mkString(", ") +
-            (if notApplied.size <= 3 then "" else s", +${notApplied.size - 3}")
+            (if notApplied.length <= 3 then "" else s", +${notApplied.length - 3}")
         )
       })
       registerGetEffectCommand()
@@ -38,8 +38,8 @@ object Avarus extends ModInitializer {
   private def registerGetEffectCommand()(implicit dispatcher: CommandDispatcher[ServerCommandSource]): Unit = {
     var builder: LiteralArgumentBuilder[ServerCommandSource] = literal("avarus-get")
 
-    for b <- buffs do
-      builder = builder.`then`(literal(b.item.toString.toLowerCase).executes(context => b.command(context)))
+    for buff <- buffs do
+      builder = builder.`then`(literal(buff.item.toString.toLowerCase).executes(toCommand(buff.applyCommand)))
 
     dispatcher.register(builder)
   }
