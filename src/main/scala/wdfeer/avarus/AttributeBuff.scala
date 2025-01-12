@@ -47,11 +47,16 @@ private abstract class UUIDEffect(val item: Item, val itemsRequired: Int) {
 
   def isApplied(player: ServerPlayerEntity): Boolean
 
-  protected def apply(player: ServerPlayerEntity): Unit
+  def apply(player: ServerPlayerEntity): Unit
 
-  def applyCommand(player: ServerPlayerEntity): CommandResult = {
+  def tryApply(player: ServerPlayerEntity): CommandResult = {
     if isApplied(player) then {
       return Failure(s"${item.toString} effect already applied!")
+    }
+
+    if player.isCreative then {
+      apply(player)
+      return Success
     }
 
     val playerItemCount = player.getInventory.count(item)

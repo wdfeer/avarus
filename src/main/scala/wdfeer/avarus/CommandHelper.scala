@@ -9,6 +9,7 @@ import net.minecraft.text.Text
 import wdfeer.avarus
 
 import scala.language.postfixOps
+import wdfeer.avarus.CommandResult.Failure
 
 def registerMessageCommand(
     name: String,
@@ -25,6 +26,10 @@ def toCommand(execute: ServerPlayerEntity => CommandResult): Command[ServerComma
     val player = context.getSource.getPlayer
     if player != null then {
       val result = execute(player)
+      result match
+        case CommandResult.Failure(error) => context.getSource.sendMessage(Text.of(error))
+        case CommandResult.Success => ()
+      
       result.number
     } else 1
   }
