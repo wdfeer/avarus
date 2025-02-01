@@ -13,9 +13,10 @@ def loadBuffsConfig(): Array[AttributeBuff] = {
     val reader = FileReader(path)
 
     val gson = Gson()
-    val array: JsonArray = gson.fromJson(reader, null.getClass)
+    val jsonArray: JsonArray = gson.fromJson(reader, classOf[JsonArray])
+    reader.close()
 
-    array.asList().toArray().asInstanceOf[Array[JsonObject]].map(deserializeBuff)
+    Array.tabulate(jsonArray.size())(i => deserializeBuff(jsonArray.get(i).getAsJsonObject))
   } else {
     saveBuffsConfig(defaultBuffs)
     defaultBuffs
@@ -34,4 +35,6 @@ def saveBuffsConfig(buffs: Array[AttributeBuff]): Unit = {
 
   val gson = Gson()
   gson.toJson(json, writer)
+
+  writer.close()
 }
