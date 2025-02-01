@@ -1,13 +1,10 @@
 package wdfeer.avarus
 
-import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents
 import net.minecraft.entity.attribute.{EntityAttribute, EntityAttributeModifier}
 import net.minecraft.inventory.Inventory
 import net.minecraft.item.Item
-import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.network.ServerPlayerEntity
-import net.minecraft.text.Text
 import wdfeer.avarus.CommandResult.{Failure, Success}
 
 import java.util.UUID
