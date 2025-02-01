@@ -8,7 +8,7 @@ import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.Text
 import wdfeer.avarus.CommandResult._
 
-def initializeCommands(): Unit = {
+def initializeCommands(buffs: Array[AttributeBuff]): Unit = {
   CommandRegistrationCallback.EVENT.register((commandDispatcher, _, _) => {
     implicit val dispatcher: CommandDispatcher[ServerCommandSource] = commandDispatcher
 
@@ -17,35 +17,35 @@ def initializeCommands(): Unit = {
     ))
     registerMessageCommand("avarus-status", context => {
       val player = context.getSource.getPlayer
-      val (applied, notApplied) = defaultBuffs.partition(_.isApplied(player))
+      val (applied, notApplied) = buffs.partition(_.isApplied(player))
       Text.of(
-        s"${applied.length}/${defaultBuffs.length} buffs applied.\n\n" +
+        s"${applied.length}/${buffs.length} buffs applied.\n\n" +
           s"Available buffs: " +
           notApplied.take(3).map(_.item.toString).mkString(", ") +
           (if notApplied.length <= 3 then "" else s", +${notApplied.length - 3}")
       )
     })
-    registerGetCommand()
-    registerGetAllCommand()
+    registerGetCommand(buffs)
+    registerGetAllCommand(buffs)
   })
 }
 
-private def registerGetCommand()(implicit dispatcher: CommandDispatcher[ServerCommandSource]): Unit = {
+private def registerGetCommand(buffs: Array[AttributeBuff])(implicit dispatcher: CommandDispatcher[ServerCommandSource]): Unit = {
   var builder: LiteralArgumentBuilder[ServerCommandSource] = literal("avarus-get")
 
-  for buff <- defaultBuffs do
+  for buff <- buffs do
     builder = builder.`then`(literal(buff.item.toString.toLowerCase).executes(toCommand(buff.tryApply)))
 
   dispatcher.register(builder)
 }
 
-private def registerGetAllCommand()(implicit dispatcher: CommandDispatcher[ServerCommandSource]): Unit = {
+private def registerGetAllCommand(buffs: Array[AttributeBuff])(implicit dispatcher: CommandDispatcher[ServerCommandSource]): Unit = {
   var builder: LiteralArgumentBuilder[ServerCommandSource] = literal("avarus-get-all")
   builder = builder.requires(_.hasPermissionLevel(2))
 
   builder = builder.executes(toCommand(player => {
     if player.isCreative then
-      if defaultBuffs.map(_.tryApply(player)).contains(Success) then Success
+      if buffs.map(_.tryApply(player)).contains(Success) then Success
       else Failure("All buffs already applied!")
     else Failure("You must be in creative mode!")
   }))
