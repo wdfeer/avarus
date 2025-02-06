@@ -9,7 +9,7 @@ import wdfeer.avarus.AttributeBuff
 
 def serializeBuff(buff: AttributeBuff): JsonObject = {
   val obj = JsonObject()
-  obj.addProperty("item", buff.item.toString)
+  obj.addProperty("item", Registries.ITEM.getId(buff.item).toString)
   obj.addProperty("count", buff.itemsRequired)
   obj.addProperty("attribute", Registries.ATTRIBUTE.getId(buff.attribute).toString)
   obj.addProperty("operation", buff.operation.getId)
