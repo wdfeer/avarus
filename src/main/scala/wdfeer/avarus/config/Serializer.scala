@@ -17,12 +17,16 @@ def serializeBuff(buff: AttributeBuff): JsonObject = {
   obj
 }
 
-def deserializeBuff(obj: JsonObject): AttributeBuff = {
-  val item: Item = Registries.ITEM.get(Identifier(obj.get("item").getAsString))
-  val count = obj.get("count").getAsInt
-  val attribute = Registries.ATTRIBUTE.get(Identifier(obj.get("attribute").getAsString))
-  val operation = Operation.fromId(obj.get("operation").getAsInt)
-  val value = obj.get("value").getAsDouble
+def deserializeBuff(obj: JsonObject): Either[String, AttributeBuff] = {
+  val id = Identifier(obj.get("item").getAsString)
+  if !Registries.ITEM.containsId(id) then Left(s"Item with identifier $id from the config not found!")
+  else {
+    val item: Item = Registries.ITEM.get(id)
+    val count = obj.get("count").getAsInt
+    val attribute = Registries.ATTRIBUTE.get(Identifier(obj.get("attribute").getAsString))
+    val operation = Operation.fromId(obj.get("operation").getAsInt)
+    val value = obj.get("value").getAsDouble
 
-  AttributeBuff(item, count, value, operation, attribute)
+    Right(AttributeBuff(item, count, value, operation, attribute))
+  }
 }

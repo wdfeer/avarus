@@ -2,7 +2,9 @@ package wdfeer.avarus.config
 
 import com.google.gson.{Gson, JsonArray, JsonObject}
 import net.fabricmc.loader.api.FabricLoader
-import wdfeer.avarus.{defaultBuffs, AttributeBuff}
+import wdfeer.avarus.{AttributeBuff, Avarus, defaultBuffs}
+import scala.util.chaining._
+
 import java.io.{File, FileReader, FileWriter}
 
 private val filename = "avarus.json"
@@ -16,7 +18,13 @@ def loadBuffsConfig(): Array[AttributeBuff] = {
     val jsonArray: JsonArray = gson.fromJson(reader, classOf[JsonArray])
     reader.close()
 
-    Array.tabulate(jsonArray.size())(i => deserializeBuff(jsonArray.get(i).getAsJsonObject))
+    val (invalids: Array[String],valids: Array[AttributeBuff]) = Array.tabulate(jsonArray.size())
+      (i => deserializeBuff(jsonArray.get(i).getAsJsonObject))
+      .pipe(arr => (arr.collect { case Left(a) => a }, arr.collect { case Right(b) => b }))
+    
+    invalids.foreach(err => Avarus.logger.error(err))
+
+    valids
   } else {
     saveBuffsConfig(defaultBuffs)
     defaultBuffs

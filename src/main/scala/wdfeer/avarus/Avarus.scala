@@ -1,12 +1,12 @@
 package wdfeer.avarus
 
 import net.fabricmc.api.ModInitializer
-import org.slf4j.LoggerFactory
+import org.slf4j.{Logger, LoggerFactory}
 import wdfeer.avarus.config.loadBuffsConfig
 
 object Avarus extends ModInitializer {
   val MOD_ID = "avarus"
-  private lazy val logger = LoggerFactory.getLogger("avarus")
+  val logger: Logger = LoggerFactory.getLogger("avarus")
 
   override def onInitialize(): Unit = {
     val buffs = loadBuffsConfig()
