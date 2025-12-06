@@ -56,7 +56,7 @@ private fun registerGetAllCommand(
 
     builder = builder.executes(toCommand { player ->
         if (player.isCreative) {
-            if (buffs.any { buff -> buff.tryApply(player) is Success }) Success
+            if (buffs.any { buff -> buff.tryApply(player).isSuccess() }) SilentSuccess
             else Failure("All buffs already applied!")
         } else {
             Failure("You must be in creative mode!")

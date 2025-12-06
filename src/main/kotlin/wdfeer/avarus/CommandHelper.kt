@@ -8,6 +8,16 @@ import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
 
+sealed class CommandResult(val number: Int) {
+    fun isSuccess(): Boolean {
+        return this is SilentSuccess || this is Success
+    }
+
+    object SilentSuccess : CommandResult(0)
+    data class Success(val info: String) : CommandResult(0)
+    data class Failure(val error: String) : CommandResult(0)
+}
+
 /** Registers a command that sends a message to the player, always succeeds. */
 fun registerMessageCommand(
     dispatcher: CommandDispatcher<ServerCommandSource>,

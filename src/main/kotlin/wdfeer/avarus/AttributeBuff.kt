@@ -56,14 +56,14 @@ abstract class UUIDEffect(
 
         if (player.isCreative) {
             apply(player)
-            return Success
+            return SilentSuccess
         }
 
         val playerItemCount = player.inventory.count(item)
         return if (playerItemCount >= itemsRequired) {
             consumeItems(player.inventory)
             apply(player)
-            Success
+            SilentSuccess
         } else {
             Failure("Not enough items! ($playerItemCount out of $itemsRequired)")
         }
