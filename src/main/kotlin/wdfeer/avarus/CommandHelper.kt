@@ -8,6 +8,7 @@ import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
 
+/** Registers a command that sends a message to the player, always succeeds. */
 fun registerMessageCommand(
     dispatcher: CommandDispatcher<ServerCommandSource>,
     name: String,
@@ -19,6 +20,7 @@ fun registerMessageCommand(
     })
 }
 
+/** Registers a command that performs an action on the player and sends an error message on error. */
 fun toCommand(execute: (ServerPlayerEntity) -> CommandResult): Command<ServerCommandSource> {
     return Command { context ->
         val player = context.source.player
