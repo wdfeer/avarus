@@ -50,7 +50,7 @@ abstract class UUIDEffect(
 
     fun tryApply(player: ServerPlayerEntity): CommandResult {
         if (isApplied(player)) {
-            return CommandResult.Failure("${item} effect already applied!")
+            return CommandResult.Failure("$item effect already applied!")
         }
 
         if (player.isCreative) {

@@ -1,15 +1,42 @@
 package wdfeer.avarus
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import net.fabricmc.loader.api.FabricLoader
+import java.io.FileReader
+import java.io.FileWriter
+import java.nio.file.Path
 
-object Config {
-    val path = FabricLoader.getInstance().configDir.resolve("avarus.cfg")
+data class Config(val buffs: List<AttributeBuff>) {
+    companion object {
+        val default: Config = Config(
+            listOf()
+        )
 
-    fun loadConfig(): List<AttributeBuff> {
-        TODO("Implement loading config from file!")
-    }
+        val path: Path = FabricLoader.getInstance().configDir.resolve("avarus.json")
 
-    fun saveConfig(buffs: List<AttributeBuff>) {
-        TODO("Implement saving config to file!")
+        fun loadConfig(): Config {
+            if (path.toFile().exists()) {
+                runCatching {
+                    val gson = Gson()
+                    FileReader(path.toFile()).use {
+                        return gson.fromJson(it, Config::class.java)
+                    }
+                }
+                Avarus.logger.error("Failed to read config! Using default config.")
+                return default
+            } else {
+                Avarus.logger.info("Config file not found, writing default config.")
+                saveConfig(default)
+                return default
+            }
+        }
+
+        fun saveConfig(config: Config) {
+            val gson = GsonBuilder().setPrettyPrinting().create()
+            FileWriter(path.toFile()).use {
+                it.write(gson.toJson(config))
+            }
+        }
     }
 }

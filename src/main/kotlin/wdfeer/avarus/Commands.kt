@@ -6,7 +6,7 @@ sealed class CommandResult(number: Int) {
 }
 
 object Commands {
-    fun initialize(buffs: List<AttributeBuff>) {
+    fun initialize(config: Config) {
         TODO("Make commands, that's like the entire mod!")
     }
 }
