@@ -29,6 +29,7 @@ fun initializeCommands(config: Config) {
         registerGetCommand(commandDispatcher, buffs)
         registerGetAllCommand(commandDispatcher, buffs)
         registerRemoveCommand(commandDispatcher, buffs)
+        registerRemoveAllCommand(commandDispatcher, buffs)
     }
 }
 
@@ -86,6 +87,25 @@ private fun registerRemoveCommand(
                 })
         )
     }
+
+    dispatcher.register(builder)
+}
+
+private fun registerRemoveAllCommand(
+    dispatcher: CommandDispatcher<ServerCommandSource>,
+    buffs: List<AttributeBuff>
+) {
+    var builder: LiteralArgumentBuilder<ServerCommandSource> = literal("avarus-remove-all")
+    builder = builder.requires { it.hasPermissionLevel(2) }
+
+    builder = builder.executes(toCommand { player ->
+        var count = 0
+        buffs.filter { it.isApplied(player) }.forEach {
+            it.remove(player)
+            count++
+        }
+        Success("$count buffs removed.")
+    })
 
     dispatcher.register(builder)
 }
