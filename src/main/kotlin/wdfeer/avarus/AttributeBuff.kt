@@ -6,6 +6,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier
 import net.minecraft.inventory.Inventory
 import net.minecraft.item.Item
 import net.minecraft.server.network.ServerPlayerEntity
+import wdfeer.avarus.CommandResult.*
 import java.util.*
 
 class AttributeBuff(
@@ -50,21 +51,21 @@ abstract class UUIDEffect(
 
     fun tryApply(player: ServerPlayerEntity): CommandResult {
         if (isApplied(player)) {
-            return CommandResult.Failure("$item effect already applied!")
+            return Failure("$item effect already applied!")
         }
 
         if (player.isCreative) {
             apply(player)
-            return CommandResult.Success
+            return Success
         }
 
         val playerItemCount = player.inventory.count(item)
         return if (playerItemCount >= itemsRequired) {
             consumeItems(player.inventory)
             apply(player)
-            CommandResult.Success
+            Success
         } else {
-            CommandResult.Failure("Not enough items! ($playerItemCount out of $itemsRequired)")
+            Failure("Not enough items! ($playerItemCount out of $itemsRequired)")
         }
     }
 

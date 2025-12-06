@@ -10,7 +10,7 @@ object Avarus : ModInitializer {
 
 	override fun onInitialize() {
 		val config = Config.loadConfig()
-		Commands.initialize(config)
+		initializeCommands(config)
 		logger.info("Avarus initialized. Start grinding.")
 	}
 }

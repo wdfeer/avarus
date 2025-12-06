@@ -1,12 +1,67 @@
 package wdfeer.avarus
 
-sealed class CommandResult(number: Int) {
-    object Success : CommandResult(0)
-    data class Failure(val error: String) : CommandResult(1)
+import com.mojang.brigadier.CommandDispatcher
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
+import net.minecraft.server.command.CommandManager.literal
+import net.minecraft.server.command.ServerCommandSource
+import net.minecraft.text.Text
+import wdfeer.avarus.CommandResult.*
+
+fun initializeCommands(config: Config) {
+    val buffs = config.buffs
+    CommandRegistrationCallback.EVENT.register { commandDispatcher, _, _ ->
+        registerMessageCommand(commandDispatcher, "avarus-help") {
+            Text.of(
+                "Avarus is a mod allowing to obtain stat increases (e.g. max hp) by \"buying\" them with a large amount of items with the \"avarus-get\" command, e.g.:\n/avarus cobblestone"
+            )
+        }
+        registerMessageCommand(commandDispatcher, "avarus-status") { context ->
+            val player = context.source.player ?: return@registerMessageCommand Text.of("No player found!")
+            val (applied, notApplied) = buffs.partition { it.isApplied(player) }
+            Text.of(
+                "${applied.size}/${buffs.size} buffs applied.\n\n" +
+                    "Available buffs: " +
+                    notApplied.take(3).joinToString(", ") { it.item.toString() } +
+                    if (notApplied.size <= 3) "" else ", +${notApplied.size - 3}"
+            )
+        }
+        registerGetCommand(commandDispatcher, buffs)
+        registerGetAllCommand(commandDispatcher, buffs)
+    }
 }
 
-object Commands {
-    fun initialize(config: Config) {
-        TODO("Make commands, that's like the entire mod!")
+private fun registerGetCommand(
+    dispatcher: CommandDispatcher<ServerCommandSource>,
+    buffs: List<AttributeBuff>
+) {
+    var builder: LiteralArgumentBuilder<ServerCommandSource> = literal("avarus-get")
+
+    for (buff in buffs) {
+        builder = builder.then(
+            literal(buff.item.toString().lowercase())
+                .executes(toCommand { buff.tryApply(it) })
+        )
     }
+
+    dispatcher.register(builder)
+}
+
+private fun registerGetAllCommand(
+    dispatcher: CommandDispatcher<ServerCommandSource>,
+    buffs: List<AttributeBuff>
+) {
+    var builder: LiteralArgumentBuilder<ServerCommandSource> = literal("avarus-get-all")
+    builder = builder.requires { it.hasPermissionLevel(2) }
+
+    builder = builder.executes(toCommand { player ->
+        if (player.isCreative) {
+            if (buffs.any { buff -> buff.tryApply(player) is Success }) Success
+            else Failure("All buffs already applied!")
+        } else {
+            Failure("You must be in creative mode!")
+        }
+    })
+
+    dispatcher.register(builder)
 }
