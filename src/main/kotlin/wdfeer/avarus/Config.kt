@@ -41,8 +41,9 @@ data class Config(val buffs: List<AttributeBuff>) {
 
         fun saveConfig(config: Config) {
             val gson = GsonBuilder().setPrettyPrinting().create()
-            FileWriter(path.toFile()).use {
-                it.write(gson.toJson(config))
+            val type = object : TypeToken<List<CompressedBuff>>() {}.type
+            FileWriter(path.toFile()).use { writer ->
+                writer.write(gson.toJson(config.buffs.map { it.toCompressedBuff() }, type))
             }
         }
     }
