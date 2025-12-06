@@ -28,6 +28,7 @@ fun initializeCommands(config: Config) {
         }
         registerGetCommand(commandDispatcher, buffs)
         registerGetAllCommand(commandDispatcher, buffs)
+        registerRemoveCommand(commandDispatcher, buffs)
     }
 }
 
@@ -59,12 +60,32 @@ private fun registerGetAllCommand(
             val results = buffs.map { buff -> buff.tryApply(player) }
             val successCount = results.count { it.isSuccess() }
             if (successCount != 0) {
-                Success("$successCount buffs applied!")
+                Success("$successCount buffs applied.")
             } else Failure("All buffs already applied!")
         } else {
             Failure("You must be in creative mode!")
         }
     })
+
+    dispatcher.register(builder)
+}
+
+private fun registerRemoveCommand(
+    dispatcher: CommandDispatcher<ServerCommandSource>,
+    buffs: List<AttributeBuff>
+) {
+    var builder: LiteralArgumentBuilder<ServerCommandSource> = literal("avarus-remove")
+    builder = builder.requires { it.hasPermissionLevel(2) }
+
+    for (buff in buffs) {
+        builder = builder.then(
+            literal(buff.item.toString().lowercase())
+                .executes(toCommand {
+                    buff.remove(it)
+                    Success("${buff.name} buff removed.")
+                })
+        )
+    }
 
     dispatcher.register(builder)
 }

@@ -31,6 +31,10 @@ class AttributeBuff(
         )
         player.getAttributeInstance(attribute)?.addPersistentModifier(modifier)
     }
+
+    fun remove(player: ServerPlayerEntity) {
+        player.getAttributeInstance(attribute)?.removeModifier(uuid)
+    }
 }
 
 abstract class UUIDEffect(
@@ -56,14 +60,14 @@ abstract class UUIDEffect(
 
         if (player.isCreative) {
             apply(player)
-            return Success("${itemsRequired}x $item effect applied!")
+            return Success("${itemsRequired}x $item effect applied.")
         }
 
         val playerItemCount = player.inventory.count(item)
         return if (playerItemCount >= itemsRequired) {
             consumeItems(player.inventory)
             apply(player)
-            return Success("${itemsRequired}x $item effect applied!")
+            return Success("${itemsRequired}x $item effect applied.")
         } else {
             Failure("Not enough items! ($playerItemCount out of $itemsRequired)")
         }
