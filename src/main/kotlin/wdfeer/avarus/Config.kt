@@ -9,9 +9,7 @@ import java.nio.file.Path
 
 data class Config(val buffs: List<AttributeBuff>) {
     companion object {
-        val default: Config = Config(
-            listOf()
-        )
+        val default: Config = Config(defaultBuffs)
 
         val path: Path = FabricLoader.getInstance().configDir.resolve("avarus.json")
 
