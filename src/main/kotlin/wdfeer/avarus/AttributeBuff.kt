@@ -5,6 +5,7 @@ import net.minecraft.entity.attribute.EntityAttribute
 import net.minecraft.entity.attribute.EntityAttributeModifier
 import net.minecraft.inventory.Inventory
 import net.minecraft.item.Item
+import net.minecraft.item.Items
 import net.minecraft.registry.Registries
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.util.Identifier
@@ -21,6 +22,8 @@ data class CompressedBuff(
 ) {
     fun toAttributeBuff(): AttributeBuff? {
         val item = Registries.ITEM[Identifier(item)]
+        if (item == Items.AIR) return null
+
         val attribute = Registries.ATTRIBUTE[Identifier(attribute)] ?: return null
         val operation = when (operation) {
             "addition" -> EntityAttributeModifier.Operation.ADDITION
