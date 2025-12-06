@@ -5,9 +5,32 @@ import net.minecraft.entity.attribute.EntityAttribute
 import net.minecraft.entity.attribute.EntityAttributeModifier
 import net.minecraft.inventory.Inventory
 import net.minecraft.item.Item
+import net.minecraft.registry.Registries
 import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.util.Identifier
 import wdfeer.avarus.CommandResult.*
 import java.util.*
+
+// Used for serialization
+data class CompressedBuff(
+    val item: String,
+    val count: Int,
+    val attribute: String,
+    val attributeValue: Double,
+    val operation: String
+) {
+    fun toAttributeBuff(): AttributeBuff? {
+        val item = Registries.ITEM[Identifier(item)]
+        val attribute = Registries.ATTRIBUTE[Identifier(attribute)] ?: return null
+        val operation = when (operation) {
+            "addition" -> EntityAttributeModifier.Operation.ADDITION
+            "multiply_base" -> EntityAttributeModifier.Operation.MULTIPLY_BASE
+            "multiply_total" -> EntityAttributeModifier.Operation.MULTIPLY_TOTAL
+            else -> return null
+        }
+        return AttributeBuff(item, count, attributeValue, operation, attribute)
+    }
+}
 
 class AttributeBuff(
     item: Item,
@@ -16,7 +39,6 @@ class AttributeBuff(
     val operation: EntityAttributeModifier.Operation,
     val attribute: EntityAttribute
 ) : UUIDEffect(item, itemsRequired) {
-
     override fun isApplied(player: ServerPlayerEntity): Boolean {
         val attributeInstance = player.getAttributeInstance(attribute)
         return attributeInstance?.getModifier(uuid) != null
@@ -34,6 +56,20 @@ class AttributeBuff(
 
     fun remove(player: ServerPlayerEntity) {
         player.getAttributeInstance(attribute)?.removeModifier(uuid)
+    }
+
+    fun toCompressedBuff(): CompressedBuff {
+        return CompressedBuff(
+            Registries.ITEM.getId(item).toString(),
+            itemsRequired,
+            Registries.ATTRIBUTE.getId(attribute).toString(),
+            value,
+            when (operation) {
+                EntityAttributeModifier.Operation.ADDITION -> "addition"
+                EntityAttributeModifier.Operation.MULTIPLY_BASE -> "multiply_base"
+                EntityAttributeModifier.Operation.MULTIPLY_TOTAL -> "multiply_total"
+            }
+        )
     }
 }
 
