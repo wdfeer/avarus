@@ -2,6 +2,7 @@ package wdfeer.avarus
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import net.fabricmc.loader.api.FabricLoader
 import java.io.FileReader
 import java.io.FileWriter
@@ -17,8 +18,16 @@ data class Config(val buffs: List<AttributeBuff>) {
             if (path.toFile().exists()) {
                 runCatching {
                     val gson = Gson()
-                    FileReader(path.toFile()).use {
-                        return gson.fromJson(it, Config::class.java)
+                    FileReader(path.toFile()).use { reader ->
+                        val type = object : TypeToken<List<CompressedBuff>>() {}.type
+                        val buffs =
+                            gson.fromJson<List<CompressedBuff>>(reader, type).associateWith { it.toAttributeBuff() }
+                        val (invalid, valid) = buffs.entries.partition { it.value == null }
+                        invalid.forEach {
+                            Avarus.logger.error("Failed reading config entry for ${it.key.item}!")
+                        }
+                        Avarus.logger.info("Loaded ${valid.count()} config entries.")
+                        return Config(valid.map { it.value!! })
                     }
                 }
                 Avarus.logger.error("Failed to read config! Using default config.")
