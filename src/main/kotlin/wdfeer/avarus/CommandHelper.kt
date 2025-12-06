@@ -36,8 +36,10 @@ fun toCommand(execute: (ServerPlayerEntity) -> CommandResult): Command<ServerCom
         val player = context.source.player
         if (player != null) {
             val result = execute(player)
-            if (result is CommandResult.Failure) {
-                context.source.sendMessage(Text.of(result.error))
+            when (result) {
+                CommandResult.SilentSuccess -> {}
+                is CommandResult.Success -> context.source.sendMessage(Text.of(result.info))
+                is CommandResult.Failure -> context.source.sendMessage(Text.of(result.error))
             }
             result.number
         } else {
