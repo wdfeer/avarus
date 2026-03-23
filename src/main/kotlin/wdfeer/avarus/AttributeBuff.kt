@@ -7,6 +7,7 @@ import net.minecraft.inventory.Inventory
 import net.minecraft.item.Item
 import net.minecraft.item.Items
 import net.minecraft.registry.Registries
+import net.minecraft.registry.entry.RegistryEntry
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.util.Identifier
 import wdfeer.avarus.CommandResult.*
@@ -21,17 +22,18 @@ data class CompressedBuff(
     val operation: String
 ) {
     fun toAttributeBuff(): AttributeBuff? {
-        val item = Registries.ITEM[Identifier(item)]
+        val item = Registries.ITEM[Identifier.of(item)]
         if (item == Items.AIR) return null
 
-        val attribute = Registries.ATTRIBUTE[Identifier(attribute)] ?: return null
+        val attribute = Registries.ATTRIBUTE[Identifier.of(attribute)] ?: return null
+        val attributeEntry = RegistryEntry.of(attribute)
         val operation = when (operation) {
-            "addition" -> EntityAttributeModifier.Operation.ADDITION
-            "multiply_base" -> EntityAttributeModifier.Operation.MULTIPLY_BASE
-            "multiply_total" -> EntityAttributeModifier.Operation.MULTIPLY_TOTAL
+            "addition" -> EntityAttributeModifier.Operation.ADD_VALUE
+            "multiply_base" -> EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE
+            "multiply_total" -> EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
             else -> return null
         }
-        return AttributeBuff(item, count, attributeValue, operation, attribute)
+        return AttributeBuff(item, count, attributeValue, operation, attributeEntry)
     }
 }
 
@@ -40,13 +42,14 @@ class AttributeBuff(
     itemsRequired: Int,
     val value: Double,
     val operation: EntityAttributeModifier.Operation,
-    val attribute: EntityAttribute
+    val attribute: RegistryEntry<EntityAttribute>
 ) : UUIDEffect(item, itemsRequired) {
     override fun isApplied(player: ServerPlayerEntity): Boolean {
         val attributeInstance = player.getAttributeInstance(attribute)
         return attributeInstance?.getModifier(uuid) != null
     }
 
+    // FIXME: need to use Identifier instead of UUID for identifying the attributeBuffs
     override fun apply(player: ServerPlayerEntity) {
         val modifier = EntityAttributeModifier(
             uuid,
@@ -65,12 +68,12 @@ class AttributeBuff(
         return CompressedBuff(
             Registries.ITEM.getId(item).toString(),
             itemsRequired,
-            Registries.ATTRIBUTE.getId(attribute).toString(),
+            Registries.ATTRIBUTE.getId(attribute.value()).toString(),
             value,
             when (operation) {
-                EntityAttributeModifier.Operation.ADDITION -> "addition"
-                EntityAttributeModifier.Operation.MULTIPLY_BASE -> "multiply_base"
-                EntityAttributeModifier.Operation.MULTIPLY_TOTAL -> "multiply_total"
+                EntityAttributeModifier.Operation.ADD_VALUE -> "addition"
+                EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE -> "multiply_base"
+                EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL -> "multiply_total"
             }
         )
     }
