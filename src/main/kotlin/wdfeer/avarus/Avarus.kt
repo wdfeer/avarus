@@ -9,7 +9,11 @@ object Avarus : ModInitializer {
     val logger: Logger = LoggerFactory.getLogger(MOD_ID)
 
 	override fun onInitialize() {
-		val config = Config.loadConfig()
+		val config = Config.loadUserConfig() ?: run {
+			val default = Config.loadDefaultConfig()!!
+			Config.saveConfig(default)
+			default
+		}
 		initializeCommands(config)
 		logger.info("Avarus initialized. Start grinding.")
 	}

@@ -12,87 +12,74 @@ import net.minecraft.util.Identifier
 import wdfeer.avarus.CommandResult.*
 import java.util.*
 
-// Used for serialization
-data class CompressedBuff(
-    val item: String,
-    val count: Int,
-    val attribute: String,
-    val attributeValue: Double,
-    val operation: String
+data class AttributeBuff(
+    val itemId: String,
+    val itemsRequired: Int,
+    val attributeId: String,
+    val value: Double,
+    val operationId: String
 ) {
-    fun toAttributeBuff(): AttributeBuff? {
-        val item = Registries.ITEM[Identifier(item)]
-        if (item == Items.AIR) return null
 
-        val attribute = Registries.ATTRIBUTE[Identifier(attribute)] ?: return null
-        val operation = when (operation) {
+    val item: Item =
+        Registries.ITEM[Identifier(itemId)]
+
+    val attribute: EntityAttribute? =
+        Registries.ATTRIBUTE[Identifier(attributeId)]
+
+    val operation: EntityAttributeModifier.Operation? =
+        when (operationId) {
             "addition" -> EntityAttributeModifier.Operation.ADDITION
             "multiply_base" -> EntityAttributeModifier.Operation.MULTIPLY_BASE
             "multiply_total" -> EntityAttributeModifier.Operation.MULTIPLY_TOTAL
-            else -> return null
+            else -> null
         }
-        return AttributeBuff(item, count, attributeValue, operation, attribute)
-    }
-}
 
-class AttributeBuff(
-    item: Item,
-    itemsRequired: Int,
-    val value: Double,
-    val operation: EntityAttributeModifier.Operation,
-    val attribute: EntityAttribute
-) : UUIDEffect(item, itemsRequired) {
-    override fun isApplied(player: ServerPlayerEntity): Boolean {
-        val attributeInstance = player.getAttributeInstance(attribute)
-        return attributeInstance?.getModifier(uuid) != null
+    val name: String by lazy {
+        "${Avarus.MOD_ID}${item.toString().lowercase()}"
     }
 
-    override fun apply(player: ServerPlayerEntity) {
-        val modifier = EntityAttributeModifier(
-            uuid,
-            name,
-            value,
-            operation
-        )
-        player.getAttributeInstance(attribute)?.addPersistentModifier(modifier)
+    val uuid: UUID by lazy {
+        UUID.nameUUIDFromBytes(name.toByteArray())
     }
 
-    fun remove(player: ServerPlayerEntity) {
-        player.getAttributeInstance(attribute)?.removeModifier(uuid)
-    }
+    /* -------------------- Lifecycle -------------------- */
 
-    fun toCompressedBuff(): CompressedBuff {
-        return CompressedBuff(
-            Registries.ITEM.getId(item).toString(),
-            itemsRequired,
-            Registries.ATTRIBUTE.getId(attribute).toString(),
-            value,
-            when (operation) {
-                EntityAttributeModifier.Operation.ADDITION -> "addition"
-                EntityAttributeModifier.Operation.MULTIPLY_BASE -> "multiply_base"
-                EntityAttributeModifier.Operation.MULTIPLY_TOTAL -> "multiply_total"
-            }
-        )
-    }
-}
-
-abstract class UUIDEffect(
-    val item: Item,
-    val itemsRequired: Int
-) {
     init {
         ServerPlayerEvents.COPY_FROM.register { oldPlayer, newPlayer, _ ->
             if (isApplied(oldPlayer)) apply(newPlayer)
         }
     }
 
-    val name: String = "${Avarus.MOD_ID}${item.toString().lowercase()}"
-    val uuid: UUID = UUID.nameUUIDFromBytes(name.toByteArray())
+    /* -------------------- Effect logic -------------------- */
 
-    abstract fun isApplied(player: ServerPlayerEntity): Boolean
-    abstract fun apply(player: ServerPlayerEntity)
+    fun isValid(): Boolean {
+        return item != Items.AIR && attribute != null && operation != null
+    }
+
+    fun isApplied(player: ServerPlayerEntity): Boolean {
+        val attr = attribute ?: return false
+        val instance = player.getAttributeInstance(attr)
+        return instance?.getModifier(uuid) != null
+    }
+
+    fun apply(player: ServerPlayerEntity) {
+        val attr = attribute ?: return
+        val op = operation ?: return
+
+        val modifier = EntityAttributeModifier(uuid, name, value, op)
+        player.getAttributeInstance(attr)?.addPersistentModifier(modifier)
+    }
+
+    fun remove(player: ServerPlayerEntity) {
+        val attr = attribute ?: return
+        player.getAttributeInstance(attr)?.removeModifier(uuid)
+    }
+
+    /* -------------------- Command helper -------------------- */
 
     fun tryApply(player: ServerPlayerEntity): CommandResult {
+        if (!isValid()) return Failure("Invalid buff configuration.")
+
         if (isApplied(player)) {
             return Failure("$item effect already applied!")
         }
@@ -106,7 +93,7 @@ abstract class UUIDEffect(
         return if (playerItemCount >= itemsRequired) {
             consumeItems(player.inventory)
             apply(player)
-            return Success("${itemsRequired}x $item effect applied.")
+            Success("${itemsRequired}x $item effect applied.")
         } else {
             Failure("Not enough items! ($playerItemCount out of $itemsRequired)")
         }
@@ -118,9 +105,9 @@ abstract class UUIDEffect(
             if (itemsUsed >= itemsRequired) break
             val stack = inventory.getStack(i)
             if (stack.item == item) {
-                val itemCountToConsume = minOf(stack.count, itemsRequired - itemsUsed)
-                itemsUsed += itemCountToConsume
-                stack.decrement(itemCountToConsume)
+                val toConsume = minOf(stack.count, itemsRequired - itemsUsed)
+                itemsUsed += toConsume
+                stack.decrement(toConsume)
             }
         }
     }

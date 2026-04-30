@@ -1,0 +1,256 @@
+{
+  "buffs": [
+    {
+      "itemId": "minecraft:sugar",
+      "itemsRequired": 512,
+      "attributeId": "minecraft:generic.movement_speed",
+      "value": 0.075,
+      "operationId": "multiply_base"
+    },
+    {
+      "itemId": "minecraft:feather",
+      "itemsRequired": 512,
+      "attributeId": "minecraft:generic.movement_speed",
+      "value": 0.075,
+      "operationId": "multiply_base"
+    },
+    {
+      "itemId": "minecraft:white_wool",
+      "itemsRequired": 512,
+      "attributeId": "minecraft:generic.movement_speed",
+      "value": 0.075,
+      "operationId": "multiply_base"
+    },
+    {
+      "itemId": "minecraft:elytra",
+      "itemsRequired": 16,
+      "attributeId": "minecraft:generic.movement_speed",
+      "value": 0.25,
+      "operationId": "multiply_total"
+    },
+    {
+      "itemId": "minecraft:magma_block",
+      "itemsRequired": 512,
+      "attributeId": "minecraft:generic.attack_damage",
+      "value": 1.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:magma_cream",
+      "itemsRequired": 128,
+      "attributeId": "minecraft:generic.attack_damage",
+      "value": 1.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:blaze_rod",
+      "itemsRequired": 64,
+      "attributeId": "minecraft:generic.attack_damage",
+      "value": 1.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:diamond_sword",
+      "itemsRequired": 32,
+      "attributeId": "minecraft:generic.attack_damage",
+      "value": 1.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:netherite_sword",
+      "itemsRequired": 32,
+      "attributeId": "minecraft:generic.attack_damage",
+      "value": 0.5,
+      "operationId": "multiply_total"
+    },
+    {
+      "itemId": "minecraft:cobblestone",
+      "itemsRequired": 2048,
+      "attributeId": "minecraft:generic.armor",
+      "value": 1.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:cobbled_deepslate",
+      "itemsRequired": 2048,
+      "attributeId": "minecraft:generic.armor",
+      "value": 1.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:tuff",
+      "itemsRequired": 2048,
+      "attributeId": "minecraft:generic.armor",
+      "value": 1.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:netherrack",
+      "itemsRequired": 2048,
+      "attributeId": "minecraft:generic.armor",
+      "value": 1.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:stone",
+      "itemsRequired": 2048,
+      "attributeId": "minecraft:generic.armor",
+      "value": 2.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:deepslate",
+      "itemsRequired": 2048,
+      "attributeId": "minecraft:generic.armor",
+      "value": 2.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:end_stone",
+      "itemsRequired": 1024,
+      "attributeId": "minecraft:generic.armor",
+      "value": 2.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:terracotta",
+      "itemsRequired": 512,
+      "attributeId": "minecraft:generic.armor",
+      "value": 2.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:bricks",
+      "itemsRequired": 512,
+      "attributeId": "minecraft:generic.armor",
+      "value": 2.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:sandstone",
+      "itemsRequired": 512,
+      "attributeId": "minecraft:generic.armor",
+      "value": 2.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:shulker_shell",
+      "itemsRequired": 64,
+      "attributeId": "minecraft:generic.armor",
+      "value": 2.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:diamond_chestplate",
+      "itemsRequired": 32,
+      "attributeId": "minecraft:generic.armor",
+      "value": 0.5,
+      "operationId": "multiply_total"
+    },
+    {
+      "itemId": "minecraft:obsidian",
+      "itemsRequired": 128,
+      "attributeId": "minecraft:generic.armor_toughness",
+      "value": 2.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:netherite_chestplate",
+      "itemsRequired": 32,
+      "attributeId": "minecraft:generic.armor_toughness",
+      "value": 4.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:wheat",
+      "itemsRequired": 512,
+      "attributeId": "minecraft:generic.max_health",
+      "value": 1.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:potato",
+      "itemsRequired": 512,
+      "attributeId": "minecraft:generic.max_health",
+      "value": 1.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:carrot",
+      "itemsRequired": 512,
+      "attributeId": "minecraft:generic.max_health",
+      "value": 1.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:beetroot",
+      "itemsRequired": 512,
+      "attributeId": "minecraft:generic.max_health",
+      "value": 1.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:pumpkin",
+      "itemsRequired": 512,
+      "attributeId": "minecraft:generic.max_health",
+      "value": 1.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:melon_slice",
+      "itemsRequired": 512,
+      "attributeId": "minecraft:generic.max_health",
+      "value": 1.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:sugar_cane",
+      "itemsRequired": 512,
+      "attributeId": "minecraft:generic.max_health",
+      "value": 1.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:cactus",
+      "itemsRequired": 512,
+      "attributeId": "minecraft:generic.max_health",
+      "value": 1.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:mushroom_stew",
+      "itemsRequired": 32,
+      "attributeId": "minecraft:generic.max_health",
+      "value": 1.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:cookie",
+      "itemsRequired": 1024,
+      "attributeId": "minecraft:generic.max_health",
+      "value": 2.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:bread",
+      "itemsRequired": 512,
+      "attributeId": "minecraft:generic.max_health",
+      "value": 2.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:cake",
+      "itemsRequired": 32,
+      "attributeId": "minecraft:generic.max_health",
+      "value": 2.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:nether_star",
+      "itemsRequired": 4,
+      "attributeId": "minecraft:generic.max_health",
+      "value": 0.5,
+      "operationId": "multiply_total"
+    }
+  ]
+}
