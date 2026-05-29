@@ -20,7 +20,7 @@ data class AttributeBuff(
     val attributeId: String,
     val value: Double,
     val operationId: String,
-    /** Functions as both the name shown to the player, and internal identifier.*/
+    /** Unique buff name shown to the player.*/
     var name: String = "${Identifier(itemId).path}$itemsRequired",
 ) {
     @Transient
@@ -41,8 +41,11 @@ data class AttributeBuff(
         else -> throw IllegalArgumentException("Invalid operationId: \"$operationId\"")
     }
 
+    @Transient
+    val internalName: String = "${Avarus.MOD_ID}_$name"
+
     val uuid: UUID by lazy {
-        UUID.nameUUIDFromBytes(name.toByteArray())
+        UUID.nameUUIDFromBytes(internalName.toByteArray())
     }
 
     /* -------------------- Lifecycle -------------------- */
@@ -62,7 +65,7 @@ data class AttributeBuff(
     }
 
     fun apply(player: ServerPlayerEntity) {
-        val modifier = EntityAttributeModifier(uuid, name, value, operation)
+        val modifier = EntityAttributeModifier(uuid, internalName, value, operation)
         player.getAttributeInstance(attribute)?.addPersistentModifier(modifier)
     }
 
