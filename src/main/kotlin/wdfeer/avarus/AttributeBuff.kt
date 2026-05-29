@@ -8,6 +8,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier
 import net.minecraft.inventory.Inventory
 import net.minecraft.item.Item
 import net.minecraft.registry.Registries
+import net.minecraft.registry.entry.RegistryEntry
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.util.Identifier
 import wdfeer.avarus.CommandResult.*
@@ -21,32 +22,29 @@ data class AttributeBuff(
     val value: Double,
     val operationId: String,
     /** Unique buff name shown to the player.*/
-    var name: String = "${Identifier(itemId).path}$itemsRequired",
+    var name: String = "${Identifier.of(itemId).path}$itemsRequired",
 ) {
     @Transient
-    val item: Item = Registries.ITEM.getOrEmpty(Identifier(itemId)).orElseThrow {
+    val item: Item = Registries.ITEM.getOrEmpty(Identifier.of(itemId)).orElseThrow {
         NoSuchElementException("No item with id \"$itemId\" found!")
     }
 
     @Transient
-    val attribute: EntityAttribute = Registries.ATTRIBUTE.getOrEmpty(Identifier(attributeId)).orElseThrow {
-        NoSuchElementException("No attribute \"$attributeId\" found!")
-    }
+    val attribute: RegistryEntry<EntityAttribute> =
+        Registries.ATTRIBUTE.getEntry(Identifier.of(attributeId)).orElseThrow {
+            NoSuchElementException("No attribute \"$attributeId\" found!")
+        }
 
     @Transient
     val operation: EntityAttributeModifier.Operation = when (operationId) {
-        "addition" -> EntityAttributeModifier.Operation.ADDITION
-        "multiply_base" -> EntityAttributeModifier.Operation.MULTIPLY_BASE
-        "multiply_total" -> EntityAttributeModifier.Operation.MULTIPLY_TOTAL
+        "addition" -> EntityAttributeModifier.Operation.ADD_VALUE
+        "multiply_base" -> EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE
+        "multiply_total" -> EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
         else -> throw IllegalArgumentException("Invalid operationId: \"$operationId\"")
     }
 
     @Transient
-    val internalName: String = "${Avarus.MOD_ID}_$name"
-
-    val uuid: UUID by lazy {
-        UUID.nameUUIDFromBytes(internalName.toByteArray())
-    }
+    val internalId: Identifier = Identifier.of(Avarus.MOD_ID, name)
 
     /* -------------------- Lifecycle -------------------- */
 
@@ -61,16 +59,16 @@ data class AttributeBuff(
     fun isApplied(player: ServerPlayerEntity): Boolean {
         val attr = attribute
         val instance = player.getAttributeInstance(attr)
-        return instance?.getModifier(uuid) != null
+        return instance?.getModifier(internalId) != null
     }
 
     fun apply(player: ServerPlayerEntity) {
-        val modifier = EntityAttributeModifier(uuid, internalName, value, operation)
+        val modifier = EntityAttributeModifier(internalId, value, operation)
         player.getAttributeInstance(attribute)?.addPersistentModifier(modifier)
     }
 
     fun remove(player: ServerPlayerEntity) {
-        player.getAttributeInstance(attribute)?.removeModifier(uuid)
+        player.getAttributeInstance(attribute)?.removeModifier(internalId)
     }
 
     /* -------------------- Command helper -------------------- */
