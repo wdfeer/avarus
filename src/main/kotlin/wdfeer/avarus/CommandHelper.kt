@@ -13,6 +13,7 @@ sealed class CommandResult(val number: Int) {
         return this is SilentSuccess || this is Success
     }
 
+    // TODO: check the sus zeros
     object SilentSuccess : CommandResult(0)
     data class Success(val info: String) : CommandResult(0)
     data class Failure(val error: String) : CommandResult(0)

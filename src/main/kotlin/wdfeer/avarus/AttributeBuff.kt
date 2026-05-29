@@ -21,17 +21,21 @@ data class AttributeBuff(
 ) {
 
     val item: Item =
-        Registries.ITEM[Identifier(itemId)]
+        Registries.ITEM.getOrEmpty(Identifier(itemId)).orElseThrow {
+            NoSuchElementException("No item with id \"$itemId\" found!")
+        }
 
-    val attribute: EntityAttribute? =
-        Registries.ATTRIBUTE[Identifier(attributeId)]
+    val attribute: EntityAttribute =
+        Registries.ATTRIBUTE.getOrEmpty(Identifier(attributeId)).orElseThrow {
+            NoSuchElementException("No attribute \"$attributeId\" found!")
+        }
 
-    val operation: EntityAttributeModifier.Operation? =
+    val operation: EntityAttributeModifier.Operation =
         when (operationId) {
             "addition" -> EntityAttributeModifier.Operation.ADDITION
             "multiply_base" -> EntityAttributeModifier.Operation.MULTIPLY_BASE
             "multiply_total" -> EntityAttributeModifier.Operation.MULTIPLY_TOTAL
-            else -> null
+            else -> throw IllegalArgumentException("Invalid operationId: \"$operationId\"")
         }
 
     val name: String by lazy {
@@ -53,26 +57,22 @@ data class AttributeBuff(
     /* -------------------- Effect logic -------------------- */
 
     fun isValid(): Boolean {
-        return item != Items.AIR && attribute != null && operation != null
+        return item != Items.AIR
     }
 
     fun isApplied(player: ServerPlayerEntity): Boolean {
-        val attr = attribute ?: return false
+        val attr = attribute
         val instance = player.getAttributeInstance(attr)
         return instance?.getModifier(uuid) != null
     }
 
     fun apply(player: ServerPlayerEntity) {
-        val attr = attribute ?: return
-        val op = operation ?: return
-
-        val modifier = EntityAttributeModifier(uuid, name, value, op)
-        player.getAttributeInstance(attr)?.addPersistentModifier(modifier)
+        val modifier = EntityAttributeModifier(uuid, name, value, operation)
+        player.getAttributeInstance(attribute)?.addPersistentModifier(modifier)
     }
 
     fun remove(player: ServerPlayerEntity) {
-        val attr = attribute ?: return
-        player.getAttributeInstance(attr)?.removeModifier(uuid)
+        player.getAttributeInstance(attribute)?.removeModifier(uuid)
     }
 
     /* -------------------- Command helper -------------------- */
