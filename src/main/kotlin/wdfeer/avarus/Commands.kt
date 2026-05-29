@@ -41,7 +41,7 @@ private fun registerGetCommand(
 
     for (buff in buffs) {
         builder = builder.then(
-            literal(buff.item.toString().lowercase())
+            literal(buff.name)
                 .executes(toCommand { buff.tryApply(it) })
         )
     }
@@ -80,7 +80,7 @@ private fun registerRemoveCommand(
 
     for (buff in buffs) {
         builder = builder.then(
-            literal(buff.item.toString().lowercase())
+            literal(buff.name)
                 .executes(toCommand {
                     buff.remove(it)
                     Success("${buff.name} buff removed.")
