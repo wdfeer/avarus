@@ -5,7 +5,6 @@ import net.minecraft.entity.attribute.EntityAttribute
 import net.minecraft.entity.attribute.EntityAttributeModifier
 import net.minecraft.inventory.Inventory
 import net.minecraft.item.Item
-import net.minecraft.item.Items
 import net.minecraft.registry.Registries
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.util.Identifier
@@ -17,29 +16,23 @@ data class AttributeBuff(
     val itemsRequired: Int,
     val attributeId: String,
     val value: Double,
-    val operationId: String
+    val operationId: String,
+    /** Functions as both the name shown to the player, and internal identifier.*/
+    var name: String = "${Identifier(itemId).path}$itemsRequired",
 ) {
+    val item: Item = Registries.ITEM.getOrEmpty(Identifier(itemId)).orElseThrow {
+        NoSuchElementException("No item with id \"$itemId\" found!")
+    }
 
-    val item: Item =
-        Registries.ITEM.getOrEmpty(Identifier(itemId)).orElseThrow {
-            NoSuchElementException("No item with id \"$itemId\" found!")
-        }
+    val attribute: EntityAttribute = Registries.ATTRIBUTE.getOrEmpty(Identifier(attributeId)).orElseThrow {
+        NoSuchElementException("No attribute \"$attributeId\" found!")
+    }
 
-    val attribute: EntityAttribute =
-        Registries.ATTRIBUTE.getOrEmpty(Identifier(attributeId)).orElseThrow {
-            NoSuchElementException("No attribute \"$attributeId\" found!")
-        }
-
-    val operation: EntityAttributeModifier.Operation =
-        when (operationId) {
-            "addition" -> EntityAttributeModifier.Operation.ADDITION
-            "multiply_base" -> EntityAttributeModifier.Operation.MULTIPLY_BASE
-            "multiply_total" -> EntityAttributeModifier.Operation.MULTIPLY_TOTAL
-            else -> throw IllegalArgumentException("Invalid operationId: \"$operationId\"")
-        }
-
-    val name: String by lazy {
-        "${Avarus.MOD_ID}${item.toString().lowercase()}"
+    val operation: EntityAttributeModifier.Operation = when (operationId) {
+        "addition" -> EntityAttributeModifier.Operation.ADDITION
+        "multiply_base" -> EntityAttributeModifier.Operation.MULTIPLY_BASE
+        "multiply_total" -> EntityAttributeModifier.Operation.MULTIPLY_TOTAL
+        else -> throw IllegalArgumentException("Invalid operationId: \"$operationId\"")
     }
 
     val uuid: UUID by lazy {
@@ -55,10 +48,6 @@ data class AttributeBuff(
     }
 
     /* -------------------- Effect logic -------------------- */
-
-    fun isValid(): Boolean {
-        return item != Items.AIR
-    }
 
     fun isApplied(player: ServerPlayerEntity): Boolean {
         val attr = attribute
@@ -78,22 +67,20 @@ data class AttributeBuff(
     /* -------------------- Command helper -------------------- */
 
     fun tryApply(player: ServerPlayerEntity): CommandResult {
-        if (!isValid()) return Failure("Invalid buff configuration.")
-
         if (isApplied(player)) {
-            return Failure("$item effect already applied!")
+            return Failure("$name effect already applied!")
         }
 
         if (player.isCreative) {
             apply(player)
-            return Success("${itemsRequired}x $item effect applied.")
+            return Success("$name effect applied.")
         }
 
         val playerItemCount = player.inventory.count(item)
         return if (playerItemCount >= itemsRequired) {
             consumeItems(player.inventory)
             apply(player)
-            Success("${itemsRequired}x $item effect applied.")
+            Success("$name effect applied.")
         } else {
             Failure("Not enough items! ($playerItemCount out of $itemsRequired)")
         }
