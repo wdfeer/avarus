@@ -1,15 +1,11 @@
 package wdfeer.avarus
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import net.fabricmc.loader.api.FabricLoader
-import java.io.File
-import java.io.FileNotFoundException
-import java.io.FileReader
-import java.io.FileWriter
-import java.io.Reader
+import java.io.*
 
+@Serializable
 data class Config(val buffs: List<AttributeBuff>) {
     companion object {
         val file: File = FabricLoader.getInstance().configDir.resolve("avarus.json").toFile()
@@ -23,20 +19,20 @@ data class Config(val buffs: List<AttributeBuff>) {
         fun loadUserConfig(): Config? = if (file.exists()) loadConfig(FileReader(file)) else null
 
         private fun loadConfig(reader: Reader): Config {
-            val gson = Gson()
             reader.use { reader ->
-                val type = Config::class.java
-                val loaded = gson.fromJson(reader, type)
+                val loaded = Json.decodeFromString<Config>(reader.readText())
                 Avarus.logger.info("Loaded ${loaded.buffs.count()} config entries.")
                 return loaded
             }
         }
 
+        private val prettyJson = Json {
+            prettyPrint = true
+        }
+
         fun saveConfig(config: Config) {
-            val gson = GsonBuilder().setPrettyPrinting().create()
-            val type = object : TypeToken<List<AttributeBuff>>() {}.type
             FileWriter(file).use { writer ->
-                writer.write(gson.toJson(config.buffs, type))
+                writer.write(prettyJson.encodeToString(config))
             }
         }
     }

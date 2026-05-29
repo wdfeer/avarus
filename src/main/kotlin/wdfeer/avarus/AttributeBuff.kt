@@ -1,5 +1,7 @@
 package wdfeer.avarus
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents
 import net.minecraft.entity.attribute.EntityAttribute
 import net.minecraft.entity.attribute.EntityAttributeModifier
@@ -11,6 +13,7 @@ import net.minecraft.util.Identifier
 import wdfeer.avarus.CommandResult.*
 import java.util.*
 
+@Serializable
 data class AttributeBuff(
     val itemId: String,
     val itemsRequired: Int,
@@ -20,14 +23,17 @@ data class AttributeBuff(
     /** Functions as both the name shown to the player, and internal identifier.*/
     var name: String = "${Identifier(itemId).path}$itemsRequired",
 ) {
+    @Transient
     val item: Item = Registries.ITEM.getOrEmpty(Identifier(itemId)).orElseThrow {
         NoSuchElementException("No item with id \"$itemId\" found!")
     }
 
+    @Transient
     val attribute: EntityAttribute = Registries.ATTRIBUTE.getOrEmpty(Identifier(attributeId)).orElseThrow {
         NoSuchElementException("No attribute \"$attributeId\" found!")
     }
 
+    @Transient
     val operation: EntityAttributeModifier.Operation = when (operationId) {
         "addition" -> EntityAttributeModifier.Operation.ADDITION
         "multiply_base" -> EntityAttributeModifier.Operation.MULTIPLY_BASE
