@@ -10,7 +10,7 @@ object Avarus : ModInitializer {
 
 	override fun onInitialize() {
 		val config = Config.loadUserConfig() ?: run {
-			val default = Config.loadDefaultConfig()!!
+			val default = Config.loadDefaultConfig()
 			Config.saveConfig(default)
 			default
 		}
