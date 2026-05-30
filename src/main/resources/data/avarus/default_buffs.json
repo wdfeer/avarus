@@ -29,6 +29,20 @@
       "operationId": "multiply_total"
     },
     {
+      "itemId": "minecraft:gold_ingot",
+      "itemsRequired": 512,
+      "attributeId": "minecraft:player.mining_efficiency",
+      "value": 0.5,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:diamond_pickaxe",
+      "itemsRequired": 32,
+      "attributeId": "minecraft:player.mining_efficiency",
+      "value": 0.1,
+      "operationId": "multiply_base"
+    },
+    {
       "itemId": "minecraft:magma_block",
       "itemsRequired": 512,
       "attributeId": "minecraft:generic.attack_damage",
@@ -239,6 +253,13 @@
       "operationId": "addition"
     },
     {
+      "itemId": "minecraft:golden_apple",
+      "itemsRequired": 256,
+      "attributeId": "minecraft:generic.max_health",
+      "value": 2.0,
+      "operationId": "addition"
+    },
+    {
       "itemId": "minecraft:cake",
       "itemsRequired": 32,
       "attributeId": "minecraft:generic.max_health",
@@ -246,10 +267,17 @@
       "operationId": "addition"
     },
     {
+      "itemId": "minecraft:enchanted_golden_apple",
+      "itemsRequired": 8,
+      "attributeId": "minecraft:generic.max_health",
+      "value": 0.2,
+      "operationId": "multiply_total"
+    },
+    {
       "itemId": "minecraft:nether_star",
       "itemsRequired": 4,
       "attributeId": "minecraft:generic.max_health",
-      "value": 0.5,
+      "value": 0.2,
       "operationId": "multiply_total"
     }
   ]
