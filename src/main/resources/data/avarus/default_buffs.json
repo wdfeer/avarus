@@ -43,6 +43,20 @@
       "operationId": "multiply_base"
     },
     {
+      "itemId": "minecraft:rabbit_foot",
+      "itemsRequired": 64,
+      "attributeId": "minecraft:generic.safe_fall_distance",
+      "value": 1.0,
+      "operationId": "addition"
+    },
+    {
+      "itemId": "minecraft:phantom_membrane",
+      "itemsRequired": 64,
+      "attributeId": "minecraft:generic.safe_fall_distance",
+      "value": 1.0,
+      "operationId": "addition"
+    },
+    {
       "itemId": "minecraft:magma_block",
       "itemsRequired": 512,
       "attributeId": "minecraft:generic.attack_damage",
