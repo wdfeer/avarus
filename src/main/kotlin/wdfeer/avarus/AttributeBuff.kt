@@ -22,7 +22,7 @@ data class AttributeBuff(
     val value: Double,
     val operationId: String,
     /** Unique buff name shown to the player.*/
-    var name: String = "${Identifier.of(itemId).path}$itemsRequired",
+    var name: String = "${Identifier.of(itemId).path}_$itemsRequired",
 ) {
     @Transient
     val item: Item = Registries.ITEM.getOrEmpty(Identifier.of(itemId)).orElseThrow {
