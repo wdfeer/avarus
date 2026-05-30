@@ -40,7 +40,14 @@
       "itemsRequired": 32,
       "attributeId": "minecraft:player.mining_efficiency",
       "value": 0.1,
-      "operationId": "multiply_base"
+      "operationId": "multiply_total"
+    },
+    {
+      "itemId": "minecraft:netherite_pickaxe",
+      "itemsRequired": 32,
+      "attributeId": "minecraft:player.mining_efficiency",
+      "value": 0.1,
+      "operationId": "multiply_total"
     },
     {
       "itemId": "minecraft:rabbit_foot",
