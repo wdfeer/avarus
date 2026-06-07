@@ -59,7 +59,7 @@ private fun registerGetAllCommand(
     builder = builder.executes(toCommand { player ->
         if (player.isCreative) {
             val results = buffs.map { buff -> buff.tryApply(player) }
-            val successCount = results.count { it.isSuccess() }
+            val successCount = results.count { it.success }
             if (successCount != 0) {
                 Success("$successCount buffs applied.")
             } else Failure("All buffs already applied!")

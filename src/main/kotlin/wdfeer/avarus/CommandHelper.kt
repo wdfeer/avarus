@@ -8,15 +8,14 @@ import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
 
-sealed class CommandResult(val number: Int) {
-    fun isSuccess(): Boolean {
-        return this is SilentSuccess || this is Success
-    }
+fun getResultNumber(success: Boolean) = if (success) Command.SINGLE_SUCCESS else 0
 
-    // TODO: check the sus zeros
-    object SilentSuccess : CommandResult(0)
-    data class Success(val info: String) : CommandResult(0)
-    data class Failure(val error: String) : CommandResult(0)
+sealed class CommandResult(val success: Boolean) {
+    val number: Int get() = getResultNumber(success)
+
+    object SilentSuccess : CommandResult(true)
+    data class Success(val info: String) : CommandResult(true)
+    data class Failure(val error: String) : CommandResult(false)
 }
 
 /** Registers a command that sends a message to the player, always succeeds. */
@@ -44,7 +43,7 @@ fun toCommand(execute: (ServerPlayerEntity) -> CommandResult): Command<ServerCom
             }
             result.number
         } else {
-            1
+            getResultNumber(false)
         }
     }
 }
