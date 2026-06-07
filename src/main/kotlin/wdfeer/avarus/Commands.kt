@@ -20,8 +20,7 @@ private class AvarusCommander(
     }
 
     fun subcommand(
-        name: String,
-        block: LiteralArgumentBuilder<ServerCommandSource>.() -> Unit
+        name: String, block: LiteralArgumentBuilder<ServerCommandSource>.() -> Unit
     ) {
         parentCommand.then(literal(name).apply(block))
     }
@@ -51,46 +50,42 @@ fun initializeCommands(config: Config) {
             subcommand("get") {
                 for (b in buffs) {
                     then(
-                        literal(b.name).executes(toCommand { b.tryApply(it) })
-                    )
+                        literal(b.name).action { b.tryApply(it) })
                 }
 
                 // TODO: make "all" an illegal buff name
                 then(
-                    literal("all").executes(
-                        toCommand { player ->
-                            if (player.isCreative) {
-                                val results = buffs.map { buff -> buff.tryApply(player) }
-                                val successCount = results.count { it.success }
-                                if (successCount != 0) {
-                                    Success("$successCount buffs applied.")
-                                } else Failure("All buffs already applied!")
-                            } else {
-                                Failure("You must be in creative mode!")
-                            }
+                    literal("all").action { player ->
+                        if (player.isCreative) {
+                            val results = buffs.map { buff -> buff.tryApply(player) }
+                            val successCount = results.count { it.success }
+                            if (successCount != 0) {
+                                Success("$successCount buffs applied.")
+                            } else Failure("All buffs already applied!")
+                        } else {
+                            Failure("You must be in creative mode!")
                         }
-                    ))
+                    })
             }
             subcommand("remove") {
                 requires { it.hasPermissionLevel(2) }
 
                 for (buff in buffs) {
                     then(
-                        literal(buff.name).executes(toCommand {
+                        literal(buff.name).action {
                             buff.remove(it)
                             Success("${buff.name} buff removed.")
                         })
-                    )
                 }
 
-                then(literal("all").executes(toCommand { player ->
+                then(literal("all").action { player ->
                     var count = 0
                     buffs.filter { it.isApplied(player) }.forEach {
                         it.remove(player)
                         count++
                     }
                     Success("$count buffs removed.")
-                }))
+                })
             }
         }
     }

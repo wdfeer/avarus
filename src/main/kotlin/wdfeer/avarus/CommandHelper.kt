@@ -1,6 +1,7 @@
 package wdfeer.avarus
 
 import com.mojang.brigadier.Command
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
@@ -15,17 +16,9 @@ sealed class CommandResult(val success: Boolean) {
     data class Failure(val error: String) : CommandResult(false)
 }
 
-/** Returns a command that sends a message to the player as a success. */
-fun toMessageCommand(
-    makeMessage: (ServerPlayerEntity) -> String
-): Command<ServerCommandSource> {
-    return toCommand {
-        CommandResult.Success(makeMessage(it))
-    }
-}
 
-// TODO: create an extension, to use
-//       `builder.toCommand { ... }` instead of `builder.execute(toCommand { ... })`
+fun LiteralArgumentBuilder<ServerCommandSource>.action(executes: (ServerPlayerEntity) -> CommandResult): LiteralArgumentBuilder<ServerCommandSource> =
+    executes(toCommand(executes))
 
 /** Returns a command that performs an action on the player and sends an error message on error. */
 fun toCommand(execute: (ServerPlayerEntity) -> CommandResult): Command<ServerCommandSource> = Command { context ->
@@ -40,5 +33,14 @@ fun toCommand(execute: (ServerPlayerEntity) -> CommandResult): Command<ServerCom
         result.number
     } else {
         getResultNumber(false)
+    }
+}
+
+/** Returns a command that sends a message to the player as a success. */
+fun toMessageCommand(
+    makeMessage: (ServerPlayerEntity) -> String
+): Command<ServerCommandSource> {
+    return toCommand {
+        CommandResult.Success(makeMessage(it))
     }
 }
